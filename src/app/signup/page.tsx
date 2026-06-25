@@ -115,7 +115,7 @@ function SignupForm() {
               type="submit"
               className="w-full rounded-full bg-gray-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-gray-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900/20 active:scale-95 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-50/20"
             >
-              Sign in
+              {loading ? "Signing up..": "Sign up"}
             </button>
           </form>
 
@@ -126,7 +126,7 @@ function SignupForm() {
                 href="/login"
                 className="font-semibold text-gray-900 transition-colors hover:text-gray-700 dark:text-gray-50 dark:hover:text-gray-300"
               >
-                Sign up
+                Sign in
               </Link>
             </p>
           </div>

@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     try {
       setLoading(true)
-      const response = await axios.post("/api/user/logout",{}, { withCredentials: true })
+      const response = await axios.get("/api/user/logout",{ withCredentials: true })
 
       if (response.data.success) {
         setUserId(null)

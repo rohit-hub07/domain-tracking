@@ -96,10 +96,10 @@ function LoginForm() {
             </div>
 
             <button
-              type="submit"
+              type="submit" 
               className="w-full rounded-full bg-gray-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-gray-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900/20 active:scale-95 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200 dark:focus:ring-gray-50/20"
             >
-              Sign in
+              {loading ? "Signing..": "Sign in"}
             </button>
           </form>
 
