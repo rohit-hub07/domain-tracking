@@ -55,7 +55,7 @@ export default function Page() {
 
     if (userId) {
       fetchData();
-    } else {
+    } else if(!authLoading && !userId){
       router.push("/login");
     }
   }, [userId, authLoading, router, fetchData]);
