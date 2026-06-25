@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     
     const { password: _, ...userDataWithoutPassword } = userObj;
 
-    console.log("newUser after removing pas: ",newUser)
+    console.log("newUser after removing pas: ",userDataWithoutPassword)
 
     const response = NextResponse.json({
       message: "User signed up successfully!",

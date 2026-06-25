@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: "Email or password is incorrect!",
         success: false,
-      }, { status: 403 })
+      }, { status: 400 })
     }
 
     // remove password from user

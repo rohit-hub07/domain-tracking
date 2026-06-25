@@ -16,7 +16,7 @@ import { NextRequest,NextResponse } from "next/server";
 
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const protectedPath = path.includes("/domain") || path.includes("/api/domain/add") || path.includes("/api/domain/delete");
+  const protectedPath = path.includes("/domain") || path.includes("/api/domain/add") || path.includes("/api/domain/delete") || path.includes("/api/domain/show");
 
   const token = request.cookies.get('token')?.value || ''
 
@@ -44,6 +44,7 @@ export const config: MiddlewareConfig = {
     "/domain",
     "/api/domain/add",
     "/api/domain/delete",
+    "/api/domain/show",
     "/user/signup"
   ]
 }
