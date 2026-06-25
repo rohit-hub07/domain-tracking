@@ -28,7 +28,7 @@ const Authcontext = createContext<IUser | null>(null)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const refreshUser = async () => {
     try {

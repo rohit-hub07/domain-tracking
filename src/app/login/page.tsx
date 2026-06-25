@@ -20,6 +20,7 @@ function LoginForm() {
   const { refreshUser, userId, loading, login } = authUser;
 
   useEffect(() => {
+    if(loading) return
     if (reason === "auth") {
       toast.error('You must login first!');
       // Clear the URL parameter after showing the toast

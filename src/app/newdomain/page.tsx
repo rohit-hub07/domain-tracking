@@ -17,6 +17,7 @@ export default function AddDomain() {
 
 
   useEffect(() => {
+    if(loading) return
     if (!loading && !userId) {
       router.push("/login?reason=auth");
     }

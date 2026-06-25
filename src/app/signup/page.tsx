@@ -29,6 +29,7 @@ function SignupForm() {
   }, [reason]);
 
   useEffect(() => {
+    if(loading) return
     // Redirect to home if already logged in (only after loading is complete)
     if (!loading && userId) {
       router.push('/home');
