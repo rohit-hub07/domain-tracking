@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUserId(userData);
 
         toast.success(response.data.message || 'Login successful!');
-        return response.data.user
+        return response.data
       }
     } catch (error: any) {
       setUserId(null);
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true)
 
       const response = await axios.post("/api/user/signup", { username, email, password }, {
-        withCredentials: true, // Required for the browser to accept and save the JWT cookie
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json"
         }
@@ -91,8 +91,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (response.data.success) {
         setUserId(response.data.userData._id);
+        toast.success(response.data.message || 'Signup successful!');
         return response.data.userData
-        // toast.success(response.data.message || 'Signup successful!');
       }
       
 

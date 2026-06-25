@@ -39,7 +39,7 @@ function LoginForm() {
     try {
       const res = await login({ email, password })
       console.log("res inside of login page: ", res);
-      if(res.success){
+      if(res?.success){
         await refreshUser();
         // toast.success(res.data?.message);
         router.push("/home")

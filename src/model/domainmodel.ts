@@ -2,6 +2,7 @@ import mongoose, { Schema, Types } from 'mongoose'
 
 interface domain {
   name: string;
+  registrar: string;
   registration: string,
   expiry: string,
   userId: Types.ObjectId;
@@ -11,6 +12,10 @@ const domainSchema = new mongoose.Schema<domain>({
   name: {
      type: String, 
      required: true 
+  },
+  registrar:{
+    type: String,
+    default: "Can't find"
   },
   registration: {
     type: String,

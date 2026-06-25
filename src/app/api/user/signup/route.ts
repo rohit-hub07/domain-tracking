@@ -7,6 +7,9 @@ dbConnection();
 
 export async function POST(request: NextRequest) {
   try {
+
+    await dbConnection()  
+
     const data = await request.json();
     const { username,  email, password } = data;
 

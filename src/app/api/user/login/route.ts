@@ -1,15 +1,16 @@
-import { dbConnection } from "@/src/db/dbConnection";
 import { User } from "@/src/model/usermodel";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv"
+import { dbConnection } from "@/src/db/dbConnection";
 dotenv.config();
 
-dbConnection();
+
 
 export async function POST(request: NextRequest) {
   try {
+    await dbConnection();
     const data = await request.json();
     const { email, password } = data;
     // console.log("email, password", email, password)

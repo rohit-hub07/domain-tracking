@@ -5,7 +5,7 @@ dotenv.config();
 
 export const dbConnection = async () => {
   const dbUrl = process.env.DB_URL;
-  console.log("dburl: ",dbUrl)
+  // console.log("dburl: ",dbUrl)
   if (!dbUrl) {
     throw new Error("DB_URL is not defined in the .env file");
   }

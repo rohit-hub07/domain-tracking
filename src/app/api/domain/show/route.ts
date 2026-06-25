@@ -4,10 +4,12 @@ import { User } from "@/src/model/usermodel";
 import { getDataFromJwt } from "@/src/utilities/getDataFromJwt";
 import { NextRequest, NextResponse } from "next/server";
 
-dbConnection();
+
 
 export async function GET(request: NextRequest){
   try {
+    await dbConnection();
+    
     if(!request.cookies.get("token")?.value){
       return NextResponse.json({
         message: "Please login!",
@@ -18,7 +20,7 @@ export async function GET(request: NextRequest){
     const userData = await getDataFromJwt(request);
     // get the current logged in user
     const currentUser = await User.findById(userData.id);
-    console.log("Current user inside of show api:", currentUser)
+    // console.log("Current user inside of show api:", currentUser)
     if(!currentUser){
       return NextResponse.json({
         message: "Please login!",
@@ -27,8 +29,8 @@ export async function GET(request: NextRequest){
     }
 
     // find all the domain details for the loggedIn user
-    const domains = await Domain.findOne({userId: currentUser._id})
-    console.log("Domain of the user: ", domains);
+    const domains = await Domain.find({userId: currentUser._id})
+    // console.log("Domain of the user: ", domains);
     
     return NextResponse.json({
       message: "Domains Fecthed successfully!",

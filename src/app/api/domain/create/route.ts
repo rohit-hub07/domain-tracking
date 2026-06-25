@@ -5,14 +5,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDataFromJwt } from '@/src/utilities/getDataFromJwt';
 
 
-await dbConnection();
+
 
 const DOMAIN_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
 
 
 export async function POST(request: NextRequest) {
   try {
-
+    await dbConnection();
+    
     //get user id
     if (!request.cookies.get("token")?.value) {
       return NextResponse.json({
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest) {
 
     const reqBody = await request.json();
     const { domain } = reqBody;
+
     console.log("domain: ", domain);
     if (!domain) {
       return NextResponse.json({
@@ -52,7 +54,7 @@ export async function POST(request: NextRequest) {
     const parsedDomainDetails = await rawDomainDetails.json()
     // console.log("domaindetails: ", parsedDomainDetails?.events)
     // store the domain the db 
-    
+
     if (!parsedDomainDetails.events || parsedDomainDetails.events.length == 0) {
       return NextResponse.json({
         message: "Invalid Domain name",
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     const domainDetails = parsedDomainDetails.events;
-
+    let domainRegistrar = ''
     let registrationDate = ''
     let expiryDate = ''
 
@@ -71,6 +73,7 @@ export async function POST(request: NextRequest) {
         const regisdata = details.eventDate.split('T')[0]
         console.log("regisdate: ", regisdata);
         registrationDate = regisdata;
+        domainRegistrar = details.eventActor // domain registrar
       }
       if (details.eventAction == "expiration") {
         // console.log("expiration: ",details.eventDate);
@@ -85,13 +88,14 @@ export async function POST(request: NextRequest) {
     // save to db
     const newDomain = await Domain.create({
       name: domain,
+      registrar: domainRegistrar,
       registration: registrationDate,
       expiry: expiryDate,
       userId: userData?.id,
     })
     return NextResponse.json({
       message: "Domain added successfully!",
-      success: trusted,
+      success: true,
       domainDetails: newDomain
     }, { status: 201 })
 

@@ -6,7 +6,7 @@ dotenv.config();
 
 export async function GET(request: NextRequest){
   try {
-
+    await dbConnection()
     const response = NextResponse.json({
       message: "User logged out successfully!",
       success: true,

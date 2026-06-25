@@ -1,11 +1,16 @@
+import { dbConnection } from "@/src/db/dbConnection";
 import { Domain } from "@/src/model/domainmodel";
 import { NextRequest, NextResponse } from "next/server";
 
 
 export async function DELETE(request: NextRequest,{params} : {params: Promise<{id: string}>}){
   try {
-    const id = await params;
+    await dbConnection();
+
+    const resolveParam = await params;
     // find domain if it exists or not
+    console.log('resolvedParam: ',resolveParam)
+    const id = resolveParam.id;
     const domain = await Domain.findById(id);
     if(!domain){
       return NextResponse.json({
@@ -13,6 +18,8 @@ export async function DELETE(request: NextRequest,{params} : {params: Promise<{i
         success: false,
       },{status: 404})
     }
+
+    await Domain.findByIdAndDelete(id);
 
     return NextResponse.json({
       message: "Domain deleted successfully!",
