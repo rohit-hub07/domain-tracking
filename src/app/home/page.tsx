@@ -20,7 +20,7 @@ export default function Page() {
   const [domainData, setDomainData] = useState<IDomain[] | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const { userId, loading: authLoading } = useAuth();
+  const { refreshUser,userId, loading: authLoading } = useAuth();
   const { showAllDomain, deleteDomain } = useDomain();
 
   const calculateRemainingDays = (expiryDateString: string): number => {
@@ -48,6 +48,7 @@ export default function Page() {
       setDomainData([]);
     }
   }, [showAllDomain]);
+
 
   useEffect(() => {
     if (authLoading) return;

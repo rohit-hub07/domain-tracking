@@ -12,8 +12,9 @@ export default function AddDomain() {
   const [isSaving, setIsSaving] = useState(false);
 
   const router = useRouter();
-  const { userId, loading } = useAuth();
+  const {userId, loading } = useAuth();
   const { addDomain, showAllDomain } = useDomain();
+
 
   useEffect(() => {
     if (!loading && !userId) {

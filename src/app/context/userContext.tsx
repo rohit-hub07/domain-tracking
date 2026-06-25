@@ -1,7 +1,7 @@
 "use client"
 
 import axios from "axios"
-import React, { useContext, createContext, useState } from "react"
+import React, { useContext, createContext, useState, useEffect } from "react"
 import toast from "react-hot-toast"
 
 export type LoginTypes = {
@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (res.data.success) {
         setUserId(res.data.id || null)
+        
       }
     } catch (error) {
 
@@ -118,6 +119,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    refreshUser();
+  }, []);
 
   return (
     <Authcontext.Provider value={{ userId,refreshUser, logout, login, signup,loading, }}>
