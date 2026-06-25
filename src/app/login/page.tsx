@@ -59,7 +59,7 @@ function LoginForm() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50">Welcome back</h1>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign in to continue to your notes</p>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign in to continue..</p>
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900">
