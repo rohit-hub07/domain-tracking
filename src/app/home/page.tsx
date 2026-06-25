@@ -20,7 +20,7 @@ export default function Page() {
   const [domainData, setDomainData] = useState<IDomain[] | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const { userId, loading: authLoading,logout } = useAuth();
+  const { userId, loading: authLoading, logout } = useAuth();
   const { showAllDomain, deleteDomain } = useDomain();
 
   const calculateRemainingDays = (expiryDateString: string): number => {
@@ -55,7 +55,7 @@ export default function Page() {
 
     if (userId) {
       fetchData();
-    } else if(!authLoading && !userId){
+    } else if (!authLoading && !userId) {
       router.push("/login");
     }
   }, [userId, authLoading, router, fetchData]);
@@ -79,14 +79,22 @@ export default function Page() {
       {/* Responsive Header Layout */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-white">My Domains</h1>
-        <button onClick={async() => await logout()} className="w-full sm:w-auto text-center bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium transition text-sm">
-          Logout
-        </button>
-
-        <Link href="/newdomain" className="w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition text-sm">
-          + Add Domain
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <button
+            onClick={async () => await logout()}
+            className="w-full sm:w-auto text-center bg-red-950/40 hover:bg-red-600 border border-red-900/50 hover:border-red-700 text-red-400 hover:text-white px-5 py-2.5 rounded-lg font-medium transition text-sm"
+          >
+            Logout
+          </button>
+          <Link
+            href="/newdomain"
+            className="w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition text-sm"
+          >
+            + Add Domain
+          </Link>
+        </div>
       </div>
+
 
       {domainData === null ? (
         <p className="text-gray-400">Loading domains...</p>
