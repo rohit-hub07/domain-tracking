@@ -1,66 +1,219 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { dbConnection } from '@/src/db/dbConnection';
-import { Domain } from '@/src/model/domainmodel';
+import { NextRequest, NextResponse } from "next/server";
+import { dbConnection } from "@/src/db/dbConnection";
+import { Domain } from "@/src/model/domainmodel";
+import { User } from "@/src/model/usermodel";
+import { sendEmail } from "@/src/lib/mail";
+import mongoose from "mongoose";
+
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+
+  return chunks;
+}
 
 export async function GET(request: NextRequest) {
   try {
-    // 1. Verify Secret Security Token to protect endpoint from public invocation
-    const authHeader = request.headers.get('authorization');
+    // Verify cron secret
+    const authHeader = request.headers.get("authorization");
+
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ message: 'Unauthorized execution' }, { status: 401 });
+      return NextResponse.json(
+        { message: "Unauthorized execution" },
+        { status: 401 }
+      );
     }
 
-    // 2. Initialise Database Connection
     await dbConnection();
+    console.log(User);
+    // console.log("Registered models:", mongoose.modelNames());
 
-    // 3. Retrieve Domains to check (Limit chunk sizes to prevent timeouts)
-    const domainsToSync = await Domain.find({}).limit(50); 
-    const syncResults = { updated: 0, failed: 0, logs: [] as string[] };
+    console.log("✅ Cron job started");
 
-    // 4. Batch Process RDAP Queries
-    for (const doc of domainsToSync) {
-      try {
-        const response = await fetch(`https://rdap.org{doc.name}`, {
-          headers: { 'User-Agent': 'NextJs-Domain-Monitor/1.0' },
-          next: { revalidate: 0 } // Bypass Next.js cache layer
-        });
+    const domainsToSync = await Domain.find({})
+      .populate("userId", "email username")
 
-        if (!response.ok) {
-          syncResults.failed++;
-          continue;
-        }
+    const syncResults = {
+      updated: 0,
+      failed: 0,
+      emailsSent: 0,
+      logs: [] as string[],
+    };
 
-        const data = await response.json();
-        if (!data.events) continue;
+    // Only notify on these days
+    const reminderDays = [30, 15, 7, 3, 1];
 
-        let registrationDate = doc.registration;
-        let expiryDate = doc.expiry;
-
-        for (const item of data.events) {
-          if (item.eventAction === 'registration' && item.eventDate) {
-            registrationDate = item.eventDate.split('T')[0];
-          }
-          if (item.eventAction === 'expiration' && item.eventDate) {
-            expiryDate = item.eventDate.split('T')[0];
-          }
-        }
-
-        // 5. Atomic database update
-        await Domain.updateOne(
-          { _id: doc._id },
-          { $set: { registration: registrationDate, expiry: expiryDate } }
-        );
-        syncResults.updated++;
-
-      } catch (innerError: any) {
-        syncResults.failed++;
-        syncResults.logs.push(`Error updating ${doc.name}: ${innerError.message}`);
+    const emailMap = new Map<
+      string,
+      {
+        username: string;
+        domains: {
+          name: string;
+          remainingDays: number;
+        }[];
       }
+    >();
+
+    const batches = chunkArray(domainsToSync, 5);
+
+    for (const batch of batches) {
+      await Promise.all(
+        batch.map(async (doc) => {
+          try {
+            const response = await fetch(
+              `https://rdap.org/domain/${doc.name}`,
+              {
+                headers: {
+                  "User-Agent": "NextJs-Domain-Monitor/1.0",
+                },
+                cache: "no-store",
+              }
+            );
+
+            if (!response.ok) {
+              syncResults.failed++;
+              return;
+            }
+
+            const data = await response.json();
+
+            let registrationDate = doc.registration;
+            let expiryDate = doc.expiry;
+
+            for (const event of data.events ?? []) {
+              if (
+                event.eventAction === "registration" &&
+                event.eventDate
+              ) {
+                registrationDate = event.eventDate.split("T")[0];
+              }
+
+              if (
+                event.eventAction === "expiration" &&
+                event.eventDate
+              ) {
+                expiryDate = event.eventDate.split("T")[0];
+              }
+            }
+
+            await Domain.updateOne(
+              { _id: doc._id },
+              {
+                $set: {
+                  registration: registrationDate,
+                  expiry: expiryDate,
+                },
+              }
+            );
+
+            syncResults.updated++;
+
+            // Remaining days calculation
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const expiry = new Date(expiryDate);
+            expiry.setHours(0, 0, 0, 0);
+
+            const remainingDays = Math.ceil(
+              (expiry.getTime() - today.getTime()) /
+              (1000 * 60 * 60 * 24)
+            );
+
+            if (reminderDays.includes(remainingDays)) {
+              const user: any = doc.userId;
+
+              if (!emailMap.has(user.email)) {
+                emailMap.set(user.email, {
+                  username: user.username || "User",
+                  domains: [],
+                });
+              }
+
+              emailMap.get(user.email)?.domains.push({
+                name: doc.name,
+                remainingDays,
+              });
+            }
+          } catch (error: any) {
+            syncResults.failed++;
+            syncResults.logs.push(
+              `${doc.name}: ${error.message}`
+            );
+          }
+        })
+      );
     }
 
-    return NextResponse.json({ message: 'Sync complete', stats: syncResults }, { status: 200 });
+    // Send one email per user
+    for (const [email, userData] of emailMap) {
+      const html = `
+      <div style="font-family:Arial,sans-serif">
 
+      <h2>Domain Expiry Reminder</h2>
+
+      <p>Hello <b>${userData.username}</b>,</p>
+
+      <p>The following domains are approaching their expiration date.</p>
+
+      <table
+        border="1"
+        cellpadding="10"
+        cellspacing="0"
+        style="border-collapse:collapse"
+      >
+        <tr>
+          <th>Domain</th>
+          <th>Remaining Days</th>
+        </tr>
+
+        ${userData.domains
+          .map(
+            (domain) => `
+            <tr>
+              <td>${domain.name}</td>
+              <td>${domain.remainingDays}</td>
+            </tr>
+          `
+          )
+          .join("")}
+
+      </table>
+
+      <br/>
+
+      <p>Please renew these domains before they expire.</p>
+
+      <p>Regards,<br/>Domain Tracker</p>
+
+      </div>
+      `;
+
+      await sendEmail(
+        email,
+        "Domain Expiry Reminder",
+        html
+      );
+
+      syncResults.emailsSent++;
+    }
+
+    return NextResponse.json(
+      {
+        message: "Sync completed successfully.",
+        stats: syncResults,
+      },
+      { status: 200 }
+    );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

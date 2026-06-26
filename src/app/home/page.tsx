@@ -19,7 +19,7 @@ export default function Page() {
   const router = useRouter();
   const [domainData, setDomainData] = useState<IDomain[] | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
+  // const [remainingExpiryDays, setRemainingExpiryDays] = useState<number>()
   const { userId, loading: authLoading, logout } = useAuth();
   const { showAllDomain, deleteDomain } = useDomain();
 

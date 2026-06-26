@@ -32,4 +32,4 @@ const domainSchema = new mongoose.Schema<domain>({
   }
 });
 
-export const Domain = mongoose.model<domain>('Domain', domainSchema);
+export const Domain = mongoose.models.Domain || mongoose.model<domain>("Domain", domainSchema);

@@ -9,7 +9,6 @@ export const dbConnection = async () => {
   if (!dbUrl) {
     throw new Error("DB_URL is not defined in the .env file");
   }
-
   try {
     await mongoose.connect(dbUrl);
     console.log("Connected to database");

@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose,{models, model} from "mongoose";
 // import { dbConnection } from "../db/dbConnection";
 import bcrypt from "bcryptjs";
 
-interface IUser{
+interface IUser {
   username: string,
   email: string,
   password: string,
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema<IUser>({
     type: String,
     required: true,
   }
-},{timestamps: true})
+}, { timestamps: true })
 
 userSchema.pre("save", async function () {
   try {
@@ -37,4 +37,4 @@ userSchema.pre("save", async function () {
 
 
 
-export const User = mongoose.model('User', userSchema);
+export const User = models.User || model<IUser>("User", userSchema);
