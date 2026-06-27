@@ -31,15 +31,15 @@ export async function GET(request: NextRequest) {
     console.log(User);
     // console.log("Registered models:", mongoose.modelNames());
 
-  //   await sendEmail(
-  //     "chaiandcodecohort@gmail.com",
-  //     "Cron Test",
-  //     `
-  //   <h2>🎉 Cron Job is Working!</h2>
-  //   <p>If you received this email, your cron route executed successfully.</p>
-  //   <p>Time: ${new Date().toLocaleString()}</p>
-  // `
-  //   );
+    await sendEmail(
+      "rohitsingh986491@gmail.com",
+      "Cron Test",
+      `
+    <h2>🎉 Cron Job is Working!</h2>
+    <p>If you received this email, your cron route executed successfully.</p>
+    <p>Time: ${new Date().toLocaleString()}</p>
+  `
+    );
 
   //   console.log("✅ Test email sent");
 
