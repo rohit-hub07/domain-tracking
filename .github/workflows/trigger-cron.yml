@@ -1,0 +1,17 @@
+name: Trigger Vercel Cron API
+
+on:
+  schedule:
+    - cron: '30 2 * * *'  # Triggers every day at 2:00 AM UTC
+  workflow_dispatch:     # Lets you click a button to test it manually
+
+jobs:
+  ping-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Next.js Cron Endpoint
+        run: |
+          curl -X GET "https://your-production-domain.com" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          -H "Content-Type: application/json" \
+          --fail
