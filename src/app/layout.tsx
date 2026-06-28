@@ -17,6 +17,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Domain Tracker",
+  description: "Welcome to Domain Tracker",
+  icons: {
+    icon: "/domain-tracker.png",
+  },
 };
 
 export default function RootLayout({
