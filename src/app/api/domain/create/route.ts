@@ -3,6 +3,7 @@ import { dbConnection } from '@/src/db/dbConnection';
 import { Domain } from '@/src/model/domainmodel'
 import { NextRequest, NextResponse } from 'next/server';
 import { getDataFromJwt } from '@/src/utilities/getDataFromJwt';
+import { redis } from '@/src/lib/redis';
 
 
 
@@ -93,6 +94,11 @@ export async function POST(request: NextRequest) {
       expiry: expiryDate,
       userId: userData?.id,
     })
+
+    console.log("userid inside of create route: ",`user:${userData.id}:domain`)
+    //delete the cache from redis
+    await redis.del(`user:${userData.id}:domain`)
+
     return NextResponse.json({
       message: "Domain added successfully!",
       success: true,

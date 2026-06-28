@@ -1,4 +1,5 @@
 import { dbConnection } from "@/src/db/dbConnection";
+import { redis } from "@/src/lib/redis";
 import { Domain } from "@/src/model/domainmodel";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -20,6 +21,9 @@ export async function DELETE(request: NextRequest,{params} : {params: Promise<{i
     }
 
     await Domain.findByIdAndDelete(id);
+
+    // removed the cache from redis
+    await redis.del(`user:${domain.userId}:domain`)
 
     return NextResponse.json({
       message: "Domain deleted successfully!",

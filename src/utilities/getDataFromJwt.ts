@@ -15,6 +15,11 @@ export async function getDataFromJwt(request:NextRequest){
     }
 
     const decodedData = jwt.verify(tokenData, process.env.JWT_SECRET as string) as CustomJWt
+
+    if (!decodedData || !decodedData.id) {
+      throw new Error("Invalid token payload structure");
+    }
+
     return decodedData
   } catch (error:any) {
     throw new Error(error.message);
