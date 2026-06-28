@@ -34,7 +34,7 @@ export const DomainProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("response inside of adddomain context: ", response)
       // const data = response.data;
       if (response?.data?.success) {
-        toast.success(response.data.message)
+        // toast.success(response.data.message)
         return response.data;
       }
 

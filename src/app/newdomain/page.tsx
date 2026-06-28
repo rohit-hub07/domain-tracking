@@ -35,9 +35,8 @@ export default function AddDomain() {
 
       if (res?.success) {
         await showAllDomain();
+        toast.success(res.message)
         router.push("/home");
-      } else {
-        toast.error("Failed to add domain.");
       }
     } catch (error: any) {
       toast.error(
