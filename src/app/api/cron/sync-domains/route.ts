@@ -23,15 +23,15 @@ export async function GET(request: NextRequest) {
     await dbConnection();
     console.log(User);
 
-    await sendEmail(
-      "rohitsingh986491@gmail.com",
-      "Cron Test",
-      `
-    <h2>🎉 Cron Job is Working!</h2>
-    <p>If you received this email, your cron route executed successfully.</p>
-    <p>Time: ${new Date().toLocaleString()}</p>
-  `
-    );
+  //   await sendEmail(
+  //     "rohitsingh986491@gmail.com",
+  //     "Cron Test",
+  //     `
+  //   <h2>🎉 Cron Job is Working!</h2>
+  //   <p>If you received this email, your cron route executed successfully.</p>
+  //   <p>Time: ${new Date().toLocaleString()}</p>
+  // `
+  //   );
 
     console.log("✅ Cron job started");
 
